@@ -1,0 +1,77 @@
+name: Sync GitHub Bug Issue to Jira
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  create-jira-bug:
+    # Hanya jalan jika issue memiliki label 'bug'
+    if: contains(github.event.issue.labels.*.name, 'bug')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Jira Bug Issue
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          node -e '
+            const payload = {
+              fields: {
+                project: { key: process.env.JIRA_PROJECT_KEY },
+                summary: `[GitHub #${process.env.ISSUE_NUMBER}] ${process.env.ISSUE_TITLE}`,
+                issuetype: { name: "Bug" },
+                description: {
+                  type: "doc",
+                  version: 1,
+                  content: [
+                    {
+                      type: "paragraph",
+                      content: [
+                        { type: "text", text: `Sumber GitHub Issue: ${process.env.ISSUE_URL}` }
+                      ]
+                    },
+                    {
+                      type: "paragraph",
+                      content: [
+                        { type: "text", text: process.env.ISSUE_BODY || "Tidak ada deskripsi tambahan." }
+                      ]
+                    }
+                  ]
+                }
+              }
+            };
+
+            const auth = Buffer.from(
+              `${process.env.JIRA_USER_EMAIL}:${process.env.JIRA_API_TOKEN}`
+            ).toString("base64");
+
+            fetch(`${process.env.JIRA_BASE_URL}/rest/api/3/issue`, {
+              method: "POST",
+              headers: {
+                "Authorization": `Basic ${auth}`,
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            })
+              .then(async (res) => {
+                const text = await res.text();
+                if (!res.ok) {
+                  console.error("Gagal membuat tiket Jira:", res.status, text);
+                  process.exit(1);
+                }
+                console.log("Berhasil membuat tiket Jira:", text);
+              })
+              .catch((err) => {
+                console.error("Error jaringan:", err);
+                process.exit(1);
+              });
+          '
