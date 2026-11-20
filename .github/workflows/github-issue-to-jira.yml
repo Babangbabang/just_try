@@ -30,8 +30,17 @@ jobs:
                 issuetype: { name: "Bug" },
                 description: {
                   type: "doc",
-                  version: 1,
-                  content: [
+                  version: 1,                  
+                  content: [                  
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Repository: ${{ github.repository }}\nURL Issue: ${{ github.event.issue.html_url }}"
+                      }
+                    ]
+                  },
                     {
                       type: "paragraph",
                       content: [
