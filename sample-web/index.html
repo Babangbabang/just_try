@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulasi Web Uji Bug - Jira & BugTriage AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    input, button {
+      padding: 8px 12px;
+      margin: 6px 4px 6px 0;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Demo Web Pengujian Bug</h1>
+  <p>Halaman sederhana untuk menguji alur GitHub Issue ke Jira (<code>KAN</code>) dan analisis BugTriage AI.</p>
+
+  <div class="card">
+    <h2>1. Kalkulator Harga per Item</h2>
+    <label>Total Harga: <input id="totalHarga" type="number" value="100000" /></label><br />
+    <label>Jumlah Item: <input id="jumlahItem" type="number" value="0" /></label><br />
+    <button id="btnHitung">Hitung Harga Satuan</button>
+    <p id="hasilHitung">Hasil: -</p>
+  </div>
+
+  <div class="card">
+    <h2>2. Simulasi Error Akses Data User</h2>
+    <button id="btnSimulasiError">Picu Error Profil User</button>
+    <pre id="logError">Belum ada error.</pre>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
